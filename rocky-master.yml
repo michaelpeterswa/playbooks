@@ -1,0 +1,19 @@
+---
+- hosts: rockyedge
+  name: Configure RockyLinux 
+  
+- name: Download and Install Packages
+  import_playbook: configure-packages.yml
+  vars:
+    the_user: "{{ ansible_user_id }}"
+
+- name: Configure OhMyZSH with Antibody
+  import_playbook: configure-oh-my-zsh.yml
+  vars:
+    the_user: "{{ ansible_user_id }}"
+    reset_ohmyzsh: True
+
+- name: Configure Docker
+  import_playbook: configure-docker.yml
+  vars:
+    the_user: "{{ ansible_user_id }}"

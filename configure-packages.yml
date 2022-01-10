@@ -1,0 +1,47 @@
+---
+- name: Configure RockyLinux Packages
+  hosts: rockyedge
+  tasks:
+  - name: Enable EPEL Repository on RockyLinux
+    dnf:
+      name: epel-release
+      state: latest
+    become: True
+    when: ansible_facts['os_family'] == 'RedHat'
+  - name: Install ZSH
+    dnf:
+      name: zsh
+      state: latest
+    become: True
+  - name: Change User Shell to ZSH
+    become: True
+    user:
+      name: "{{ the_user }}"
+      shell: /bin/zsh
+  - name: Install Git
+    dnf:
+      name: git
+      state: latest
+    become: True
+    when: ansible_facts['os_family'] == 'RedHat'
+  - name: Install Ruby
+    dnf:
+      name: ruby
+      state: latest
+    become: True
+    when: ansible_facts['os_family'] == 'RedHat'
+  - name: Download and Install lolcat
+    ansible.builtin.shell:
+      cmd: gem install lolcat
+      chdir: /home/{{ the_user }}
+    become: True
+  - name: Download bat Binary
+    ansible.builtin.shell:
+      cmd: curl -fsSL https://github.com/sharkdp/bat/releases/download/v0.19.0/bat-v0.19.0-x86_64-unknown-linux-gnu.tar.gz -o bat.tar.gz
+      chdir: /usr/local/bin
+    become: True
+  - name: Extract bat Binary
+    ansible.builtin.shell:
+      cmd: tar -xf bat.tar.gz && mv bat-v0.19.0-x86_64-unknown-linux-gnu/bat batcat  && rm -rf bat.tar.gz && rm -rf bat-v0.19.0-x86_64-unknown-linux-gnu/
+      chdir: /usr/local/bin
+    become: True

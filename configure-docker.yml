@@ -1,0 +1,45 @@
+---
+- name: Configure Docker
+  hosts: rockyedge
+  tasks:
+  - name: Add Docker CE Repository to DNF
+    ansible.builtin.shell:
+      cmd: sudo dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+      chdir: /home/{{ the_user }}
+    become: True
+  - name: Remove Container Tools
+    dnf:
+      name: 
+        - podman
+        - buildah
+        - runc
+      state: absent
+    become: True
+  - name: Upgrade All Packages
+    dnf:
+      name: "*"
+      state: latest
+    become: True
+  - name: Install Docker Packages
+    dnf:
+      name: 
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+      state: latest
+    become: True
+    when: ansible_facts['os_family'] == 'RedHat'
+  - name: Enable Docker Daemon
+    ansible.builtin.systemd:
+      name: docker
+      enabled: yes
+  - name: Start Docker Daemon
+    ansible.builtin.systemd:
+      state: started
+      name: docker
+    become: True
+  - name: Add User to Docker Group
+    ansible.builtin.shell:
+      cmd: sudo usermod -aG docker {{ the_user }}
+      chdir: /home/{{ the_user }}
+    become: True
