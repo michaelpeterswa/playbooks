@@ -1,0 +1,62 @@
+---
+- name: Configure and Harden SSH
+  hosts: rockyedge
+  tasks:
+  - name: Check Port for SELinux Configuration
+    ansible.builtin.shell:
+      cmd: sudo semanage port -l | grep ssh | grep -q "3559"
+    register: port_status
+    ignore_errors: True
+    become: True
+  - name: Set New SSH Port in SELinux
+    ansible.builtin.shell:
+      cmd: sudo semanage port -a -t ssh_port_t -p tcp 3559
+    when: port_status is failed
+    become: True
+  - name: Disable SSH root login
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^#PermitRootLogin'
+      line: 'PermitRootLogin no'
+    become: True
+  - name: Disable SSH password authentication
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^#PasswordAuthentication yes'
+      line: 'PasswordAuthentication no'
+    become: True
+  - name: Set SSH AuthenticationMethods
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      state: present
+      line: 'AuthenticationMethods publickey'
+    become: True
+  - name: Setup alternate SSHd port
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^#Port'
+      line: 'Port 3559'
+    become: True
+  - name: Set SSH KexAlgorithms
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      state: present
+      line: 'KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256'
+    become: True
+  - name: Set SSH Ciphers
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      state: present
+      line: 'Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr'
+    become: True
+  - name: Restart SSHd
+    service:
+      name: sshd
+      state: restarted
+    become: True
+  - name: Permit SSH Traffic with Firewalld
+    ansible.posix.firewalld:
+      port: 3559/tcp
+      permanent: yes
+      state: enabled
+    become: True
