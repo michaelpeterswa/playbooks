@@ -43,3 +43,7 @@
       cmd: sudo usermod -aG docker {{ the_user }}
       chdir: /home/{{ the_user }}
     become: True
+  - name: install 'Docker SDK for Python'
+    become: True
+    pip:
+      name: docker

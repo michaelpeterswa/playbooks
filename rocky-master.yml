@@ -17,3 +17,13 @@
   import_playbook: configure-docker.yml
   vars:
     the_user: "{{ ansible_user_id }}"
+
+- name: Configure Fail2Ban
+  import_playbook: configure-fail2ban.yml
+
+- name: Spawn NGINX
+  import_playbook: spawn-nginx.yml
+
+# - name: Configure Certbot
+# - name: Configure AWS Credentials with Lastpass
+# - name: Configure Cron

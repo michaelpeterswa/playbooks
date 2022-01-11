@@ -1,0 +1,11 @@
+---
+- name: Spawn NGINX
+  hosts: rockyedge
+  tasks:
+  - name: Start NGINX on Docker
+    docker_container:
+      name: nginx-edge
+      image: nginx
+      state: started
+      ports:
+      - "80:80"
