@@ -1,0 +1,22 @@
+---
+- name: Configure Amazon Web Services
+  hosts: rockyedge
+  tasks:
+    - name: Install AWScli
+      dnf:
+        name: awscli
+        state: latest
+      become: True
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: "/home/{{ the_user }}/.aws"
+        state: directory
+        mode: '0755'
+    - name: Create .aws/credentials
+      template:
+        src: templates/aws/aws-credentials.j2
+        dest: "/home/{{ the_user }}/.aws/credentials"
+    - name: Create .aws/config
+      template:
+        src: templates/aws/aws-config.j2
+        dest: "/home/{{ the_user }}/.aws/config"

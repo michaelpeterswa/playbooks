@@ -1,0 +1,45 @@
+# michaelpeterswa's fail2ban configuration 2022
+
+[INCLUDES]
+
+#before = paths-distro.conf
+before = paths-fedora.conf
+
+# The DEFAULT allows a global definition of the options. They can be overridden
+# in each jail afterwards.
+
+[DEFAULT]
+
+#
+# MISCELLANEOUS OPTIONS
+#
+
+# "bantime.increment" allows to use database for searching of previously banned ip's to increase a 
+# default ban time using special formula, default it is banTime * 1, 2, 4, 8, 16, 32...
+bantime.increment = true
+
+# "bantime" is the number of seconds that a host is banned.
+bantime  = 10m
+
+# A host is banned if it has generated "maxretry" during the last "findtime"
+# seconds.
+findtime  = 10m
+
+# "maxretry" is the number of failures before a host get banned.
+maxretry = {{ fail2ban_max_retry }}
+
+# "maxmatches" is the number of matches stored in ticket (resolvable via tag <matches> in actions).
+maxmatches = %(maxretry)s
+
+backend = auto
+usedns = warn
+
+#
+# JAILS
+#
+
+[sshd]
+enabled = true
+port    = ssh
+logpath = %(sshd_log)s
+backend = %(sshd_backend)s

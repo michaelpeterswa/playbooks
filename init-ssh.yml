@@ -13,60 +13,13 @@
       cmd: sudo semanage port -a -t ssh_port_t -p tcp 3559
     when: port_status is failed
     become: True
-  - name: Remove Current SSHd PermitRootLogin
-    lineinfile:
+  - name: Create /etc/ssh/sshd_config
+    template:
+      src: templates/sshd/sshd_config.j2
       dest: /etc/ssh/sshd_config
-      regexp: '^PermitRootLogin'
-      state: absent
     become: True
-  - name: Disable SSH root login
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      regexp: '^#PermitRootLogin'
-      line: 'PermitRootLogin no'
-    become: True
-  - name: Remove Current SSHd PasswordAuthentication
-    lineinfile:
-      dest: /etc/ssh/sshd_config
-      regexp: '^PasswordAuthentication'
-      state: absent
-    become: True
-  - name: Disable SSH password authentication
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      regexp: '^#PasswordAuthentication yes'
-      line: 'PasswordAuthentication no'
-    become: True
-  - name: Set SSH AuthenticationMethods
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      state: present
-      line: 'AuthenticationMethods publickey'
-    become: True
-  - name: Remove Current SSHd port
-    lineinfile:
-      dest: /etc/ssh/sshd_config
-      regexp: '^Port'
-      state: absent
-    become: True
-  - name: Setup alternate SSHd port
-    lineinfile:
-      dest: /etc/ssh/sshd_config
-      regexp: '^#Port'
-      line: 'Port 3559'
-    become: True
-  - name: Set SSH KexAlgorithms
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      state: present
-      line: 'KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256'
-    become: True
-  - name: Set SSH Ciphers
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      state: present
-      line: 'Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr'
-    become: True
+    vars:
+      sshd_port: "{{ lookup('community.general.lastpass', 'sshd_port', field='notes') }}"
   - name: Restart SSHd
     service:
       name: sshd

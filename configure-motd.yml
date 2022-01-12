@@ -1,0 +1,22 @@
+---
+- name: Configure MOTD
+  hosts: rockyedge
+  tasks:
+    - name: Remove Default MOTD files
+      ansible.builtin.file:
+        path: '{{ item.path }}'
+        state: absent
+      become: True
+      loop:
+        - { path: /etc/motd.d/cockpit }
+        - { path: /etc/motd.d/insights-client }
+    - name: Download MOTD Script
+      ansible.builtin.shell:
+        cmd: curl -fsSL https://gist.githubusercontent.com/michaelpeterswa/dbae069089a44f72385f12cf6f35de5a/raw/65d1611a9efb6b52ad838420b4843b9bf9763f45/motd.sh -o /usr/local/bin/motd.sh && chmod +x /usr/local/bin/motd.sh
+      become: True
+    - name: Add MOTD Script to .zshrc
+      ansible.builtin.lineinfile:
+        path: '/home/{{ the_user }}/.zshrc'
+        line: '/usr/local/bin/motd.sh'
+        insertafter: EOF
+        state: present

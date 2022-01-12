@@ -38,3 +38,8 @@
       cmd: curl -fsSL https://raw.githubusercontent.com/ergenekonyigit/lambda-gitster/main/lambda-gitster.zsh-theme -o .oh-my-zsh/custom/themes/lambda-gitster.zsh-theme
       chdir: /home/{{ the_user }}
     when: reset_ohmyzsh | bool
+  - name: Ensure Last Line of .zshrc is Absent
+    ansible.builtin.lineinfile:
+      path: /home/{{ the_user }}/.zshrc
+      regexp: '^curl'
+      state: absent
