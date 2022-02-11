@@ -17,6 +17,6 @@
     - name: Add MOTD Script to .zshrc
       ansible.builtin.lineinfile:
         path: '/home/{{ the_user }}/.zshrc'
-        line: '/usr/local/bin/motd.sh'
+        line: 'motd.sh'
         insertafter: EOF
         state: present

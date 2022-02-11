@@ -1,0 +1,39 @@
+---
+- name: Configure Certbot
+  hosts: rockyedge
+  tasks:
+    - name: Force Update Pip
+      pip: 
+        name: pip
+        state: latest
+      become: True
+    - name: Install certbot
+      dnf:
+        name: certbot
+        state: latest
+      become: True
+    - name: Install certbot-dns-route53
+      pip:
+        name: certbot-dns-route53
+    - name: Create Certbot Directories
+      ansible.builtin.file:
+        path: '{{ item }}'
+        state: directory
+        mode: 0777
+        recurse: yes
+      become: True
+      loop:
+        - "/home/michael/.letsencrypt/log"
+        - "/home/michael/.letsencrypt/config"
+        - "/home/michael/.letsencrypt/work"
+    - name: Install Certificates for Domains
+      command: certbot certonly -d '{{ item }}' -d *.'{{ item }}' --dns-route53 --logs-dir /home/michael/.letsencrypt/log/ --config-dir /home/michael/.letsencrypt/config/ --work-dir /home/michael/.letsencrypt/work/ -m michael@michaelpeterswa.com --agree-tos --non-interactive
+      loop:
+        - "michaelpeterswa.com"
+        - "mptrswa.com"
+        - "cascades.dev"
+        - "cascadelabs.dev"
+        - "nwst.us"
+        - "halcyonresearch.dev"
+        - "nw.codes"
+        - "shrt.fyi"

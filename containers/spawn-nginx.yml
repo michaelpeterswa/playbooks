@@ -2,10 +2,18 @@
 - name: Spawn NGINX
   hosts: rockyedge
   tasks:
+  - name: Move files for for nginx-edge
+    copy:
+      src: /shares/playbooks/templates/nginx
+      dest: /home/michael/templates/
   - name: Start NGINX on Docker
     docker_container:
       name: nginx-edge
       image: nginx
+      network_mode: host
+      volumes:
+      - /home/michael/templates/nginx/proxies:/etc/nginx/sites-enabled
+      - /home/michael/templates/nginx/config:/etc/nginx/conf.d
+      - /home/michael/.letsencrypt/config:/etc/nginx/certificates
       state: started
-      ports:
-      - "80:80"
+      restart_policy: always

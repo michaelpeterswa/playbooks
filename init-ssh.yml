@@ -4,13 +4,13 @@
   tasks:
   - name: Check Port for SELinux Configuration
     ansible.builtin.shell:
-      cmd: sudo semanage port -l | grep ssh | grep -q "3559"
+      cmd: sudo semanage port -l | grep ssh | grep -q "{{ lookup('community.general.lastpass', 'sshd_port', field='notes') }}"
     register: port_status
     ignore_errors: True
     become: True
   - name: Set New SSH Port in SELinux
     ansible.builtin.shell:
-      cmd: sudo semanage port -a -t ssh_port_t -p tcp 3559
+      cmd: sudo semanage port -a -t ssh_port_t -p tcp "{{ lookup('community.general.lastpass', 'sshd_port', field='notes') }}"
     when: port_status is failed
     become: True
   - name: Create /etc/ssh/sshd_config
@@ -27,7 +27,7 @@
     become: True
   - name: Permit SSH Traffic with Firewalld
     ansible.posix.firewalld:
-      port: 3559/tcp
+      port: "{{ lookup('community.general.lastpass', 'sshd_port', field='notes') }}"/tcp
       permanent: yes
       state: enabled
     become: True

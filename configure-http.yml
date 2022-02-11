@@ -1,0 +1,43 @@
+---
+- name: Configure and Harden SSH
+  hosts: rockyedge
+  tasks:
+  - name: Check HTTP Port for SELinux Configuration
+    ansible.builtin.shell:
+      cmd: sudo semanage port -l | grep http | grep -q 80
+    register: port_status_http
+    ignore_errors: True
+    become: True
+  - name: Check HTTPS Port for SELinux Configuration
+    ansible.builtin.shell:
+      cmd: sudo semanage port -l | grep http | grep -q 443
+    register: port_status_https
+    ignore_errors: True
+    become: True
+  - name: Set New HTTP Port in SELinux
+    ansible.builtin.shell:
+      cmd: sudo semanage port -a -t http_port_t -p tcp 80
+    when: port_status_http is failed
+    become: True
+  - name: Set New HTTPS Port in SELinux
+    ansible.builtin.shell:
+      cmd: sudo semanage port -a -t http_port_t -p tcp 443
+    when: port_status_https is failed
+    become: True
+  - name: Permit HTTP Traffic with Firewalld
+    ansible.posix.firewalld:
+      port: 80/tcp
+      permanent: yes
+      state: enabled
+    become: True
+  - name: Permit HTTPS Traffic with Firewalld
+    ansible.posix.firewalld:
+      port: 443/tcp
+      permanent: yes
+      state: enabled
+    become: True
+  - name: Restart Firewalld
+    ansible.builtin.service:
+      name: firewalld
+      state: reloaded
+    become: True

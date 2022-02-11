@@ -1,0 +1,2 @@
+templates/nginx/proxies/*
+!templates/nginx/proxies/.keep

@@ -1,0 +1,19 @@
+---
+- name: Configure Certbot
+  hosts: rockyedge
+  tasks:
+    - name: Install Chrony
+      dnf:
+        name: chrony
+        state: latest
+      become: True
+    - name: Start ChronyD
+      ansible.builtin.service:
+        name: chronyd
+        state: started
+      become: True
+    - name: Enable ChronyD
+      ansible.builtin.service:
+        name: chronyd
+        enabled: yes
+      become: True
