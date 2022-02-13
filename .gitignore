@@ -1,2 +1,2 @@
-templates/nginx/proxies/*
-!templates/nginx/proxies/.keep
+rocky-edge/templates/nginx/proxies/*
+!rocky-edge/templates/nginx/proxies/.keep

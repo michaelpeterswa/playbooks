@@ -1,30 +1,33 @@
 ---
 - hosts: rockyedge
   name: Configure RockyLinux 
+
+- name: Setup NTP Connection
+  import_playbook: setup/configure-chrony.yml
   
 - name: Download and Install Packages
-  import_playbook: configure-packages.yml
+  import_playbook: setup/configure-packages.yml
   vars:
     the_user: "{{ ansible_user_id }}"
 
 - name: Configure OhMyZSH with Antibody
-  import_playbook: configure-oh-my-zsh.yml
+  import_playbook: setup/configure-oh-my-zsh.yml
   vars:
     the_user: "{{ ansible_user_id }}"
     reset_ohmyzsh: True
 
 - name: Configure Docker
-  import_playbook: configure-docker.yml
+  import_playbook: setup/configure-docker.yml
   vars:
     the_user: "{{ ansible_user_id }}"
 
 - name: Configure Fail2Ban
-  import_playbook: configure-fail2ban.yml
+  import_playbook: setup/configure-fail2ban.yml
   vars:
     fail2ban_max_retry: 2
 
 - name: Configure AWScli and AWS Credentials
-  import_playbook: configure-aws.yml
+  import_playbook: cloud/configure-aws.yml
   vars:
     the_user: "{{ ansible_user_id }}"
     aws_access_key_id: "{{ lookup('community.general.lastpass', 'aws_access_key_id', field='notes') }}"
@@ -33,12 +36,15 @@
     aws_output: json
 
 - name: Configure MOTD
-  import_playbook: configure-motd.yml
+  import_playbook: setup/configure-motd.yml
   vars:
     the_user: "{{ ansible_user_id }}"
 
+- name: Configure Certbot
+  import_playbook: web/configure-certbot.yml
+
+- name: Configure HTTP Firewall
+  import_playbook: web/configure-http.yml
+
 - name: Spawn NGINX
   import_playbook: containers/spawn-nginx.yml
-
-# - name: Configure Certbot
-# - name: Configure Cron
