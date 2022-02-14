@@ -9,7 +9,7 @@
     become: True
   - name: Create /etc/fail2ban/jail.local
     template:
-      src: templates/fail2ban/jail.local.j2
+      src: ../templates/fail2ban/jail.local.j2
       dest: /etc/fail2ban/jail.local
     become: True
   - name: Restart fail2ban

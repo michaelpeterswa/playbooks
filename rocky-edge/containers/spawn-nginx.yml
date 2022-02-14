@@ -4,7 +4,7 @@
   tasks:
   - name: Move files for for nginx-edge
     copy:
-      src: /shares/playbooks/templates/nginx
+      src: /shares/playbooks/rocky-edge/templates/nginx
       dest: /home/michael/templates/
   - name: Start NGINX on Docker
     docker_container:
