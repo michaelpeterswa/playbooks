@@ -1,0 +1,23 @@
+---
+- name: Spawn Telegraf
+  hosts: rockyedge
+  tasks:
+  - name: Delete content & directory
+    file:
+      state: absent
+      path: /home/michael/templates/telegraf
+  - name: Move Files For Telegraf
+    copy:
+      src: /shares/playbooks/rocky-edge/templates/telegraf
+      dest: /home/michael/templates/
+  - name: Start Telegraf on Docker
+    docker_container:
+      name: telegraf
+      image: telegraf
+      network_mode: host
+      user: telegraf:985
+      volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/michael/templates/telegraf:/etc/telegraf
+      state: started
+      restart_policy: always

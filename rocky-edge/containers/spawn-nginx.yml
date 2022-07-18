@@ -2,6 +2,10 @@
 - name: Spawn NGINX
   hosts: rockyedge
   tasks:
+  - name: Delete content & directory
+    file:
+      state: absent
+      path: /home/michael/templates/nginx
   - name: Move files for for nginx-edge
     copy:
       src: /shares/playbooks/rocky-edge/templates/nginx

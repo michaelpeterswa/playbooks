@@ -27,7 +27,7 @@
     become: True
   - name: Permit SSH Traffic with Firewalld
     ansible.posix.firewalld:
-      port: "{{ lookup('community.general.lastpass', 'sshd_port', field='notes') }}"/tcp
+      port: "{{ lookup('community.general.lastpass', 'sshd_port', field='notes') }}/tcp"
       permanent: yes
       state: enabled
     become: True
