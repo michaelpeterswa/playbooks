@@ -19,5 +19,5 @@
       - /home/michael/templates/nginx/proxies:/etc/nginx/sites-enabled
       - /home/michael/templates/nginx/config:/etc/nginx/conf.d
       - /home/michael/.letsencrypt/config:/etc/nginx/certificates
-      state: started
+      state: restart
       restart_policy: always

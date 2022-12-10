@@ -1,0 +1,10 @@
+---
+- name: Configure Tailscale
+  hosts: rockyedge
+  tasks:
+  - name: Install
+    include_role:
+      name: artis3n.tailscale
+    vars:
+      tailscale_args: "--advertise-routes=10.0.0.0/24"
+      tailscale_authkey: "{{ lookup('community.general.lastpass', 'rainier-tailscale', field='notes') }}"
