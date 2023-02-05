@@ -1,2 +1,3 @@
 rocky-edge/templates/nginx/proxies/*
 !rocky-edge/templates/nginx/proxies/.keep
+cluster/kubernetes/join_command

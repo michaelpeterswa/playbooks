@@ -1,0 +1,14 @@
+---
+- name: Join Worker Nodes
+  hosts: workernodes
+  tasks:
+  - name: Copy join command from Ansiblehost to the worker nodes.
+    become: True
+    copy:
+      src: ./join_command
+      dest: ./join_command
+      mode: 0777
+
+  - name: Join the Worker nodes to the cluster.
+    become: True
+    command: sh ./join_command

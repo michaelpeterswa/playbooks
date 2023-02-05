@@ -1,0 +1,26 @@
+controlplane:
+  hosts:
+    control-plane-1:
+      ansible_host: 10.0.0.20
+  vars:
+    ansible_ssh_private_key_file: ~/.ssh/ansible_key
+    ansible_user: cluster-admin
+
+workernodes:
+  hosts:
+    worker-1:
+      ansible_host: 10.0.0.21
+    worker-2:
+      ansible_host: 10.0.0.22
+    worker-3:
+      ansible_host: 10.0.0.23
+    worker-4:
+      ansible_host: 10.0.0.24
+  vars:
+    ansible_ssh_private_key_file: ~/.ssh/ansible_key
+    ansible_user: cluster-admin
+    
+all:
+  children:
+    controlplane:
+    workernodes:

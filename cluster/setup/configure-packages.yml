@@ -1,0 +1,54 @@
+---
+- name: Configure Ubuntu Packages
+  hosts: all
+  tasks:
+  - name: Update APT
+    apt:
+      update_cache: yes
+      cache_valid_time: 3600
+    become: True
+  - name: Install ZSH
+    apt:
+      name: zsh
+      state: latest
+    become: True
+  - name: Change User Shell to ZSH
+    become: True
+    user:
+      name: "{{ the_user }}"
+      shell: /bin/zsh
+  - name: Install Git
+    apt:
+      name: git
+      state: latest
+    become: True
+  - name: Install Ruby
+    apt:
+      name: ruby
+      state: latest
+    become: True
+  - name: Download and Install lolcat
+    ansible.builtin.shell:
+      cmd: gem install lolcat
+      chdir: /home/{{ the_user }}
+    become: True
+  - name: Download bat Binary
+    ansible.builtin.shell:
+      cmd: curl -fsSL https://github.com/sharkdp/bat/releases/download/v0.19.0/bat-v0.19.0-x86_64-unknown-linux-gnu.tar.gz -o bat.tar.gz
+      chdir: /usr/local/bin
+    become: True
+  - name: Extract bat Binary
+    ansible.builtin.shell:
+      cmd: tar -xf bat.tar.gz && mv bat-v0.19.0-x86_64-unknown-linux-gnu/bat batcat && rm -rf bat.tar.gz && rm -rf bat-v0.19.0-x86_64-unknown-linux-gnu/
+      chdir: /usr/local/bin
+    become: True
+  - name: Download and Install croc
+    ansible.builtin.shell:
+      cmd: curl https://getcroc.schollz.com | bash
+      chdir: /home/{{ the_user }}
+    become: True
+  - name: Install Figlet
+    apt:
+      name: figlet
+      state: latest
+    become: True

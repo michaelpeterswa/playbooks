@@ -1,0 +1,38 @@
+---
+- name: Create Control Plane
+  hosts: controlplane
+  tasks:
+  - name: KubeAdm Init
+    ansible.builtin.shell:
+      cmd: "{{ item }}"
+    with_items:
+      - kubeadm init --pod-network-cidr=10.244.0.0/16
+    become: True
+  - name: Create .kube Directory
+    ansible.builtin.file:
+      path: /home/{{ ansible_user }}/.kube
+      state: directory
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+      mode: '0755'
+    become: True
+  - name: Copy KubeConfig
+    ansible.builtin.copy:
+      src: /etc/kubernetes/admin.conf
+      dest: /home/{{ ansible_user }}/.kube/config
+      remote_src: yes
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+      mode: '0644'
+    become: True
+  - name: Apply Flannel
+    ansible.builtin.shell:
+      cmd: kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/v0.21.0/Documentation/kube-flannel.yml
+  - name: Get Join Token Command
+    shell: kubeadm token create --print-join-command
+    register: kubernetes_join_command
+  - name: Copy join command to local file.
+    delegate_to: localhost
+    copy:
+      content: "{{ kubernetes_join_command.stdout_lines[0] }}"
+      dest: ./join_command

@@ -1,0 +1,24 @@
+---
+- name: Remove Docker
+  hosts: all
+  tasks:
+  - name: Remove Docker Group
+    group:
+      name: docker
+      state: absent
+    become: True
+  - name: Enable/Start Docker Daemon
+    ansible.builtin.systemd:
+      name: docker
+      state: stopped
+      enabled: true
+    become: True
+  - name: Remove Docker Prerequisites
+    apt:
+      name:
+        - docker-ce
+        - docker-ce-cli
+        - docker-compose-plugin
+      state: absent
+    become: True
+  

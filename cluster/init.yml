@@ -1,0 +1,30 @@
+---
+- hosts: all
+
+- name: Download and Install Packages
+  import_playbook: setup/configure-packages.yml
+  vars:
+    the_user: "{{ ansible_user_id }}"
+
+- name: Configure OhMyZSH with Antibody
+  import_playbook: setup/configure-oh-my-zsh.yml
+  vars:
+    the_user: "{{ ansible_user_id }}"
+    reset_ohmyzsh: True
+
+- name: Configure Containerd
+  import_playbook: setup/configure-containerd.yml
+  vars:
+    the_user: "{{ ansible_user_id }}"
+  
+- name: Configure Kubernetes
+  import_playbook: setup/configure-kubernetes.yml
+  vars:
+    the_user: "{{ ansible_user_id }}"
+
+- name: Remove Docker
+  import_playbook: setup/remove-docker.yml
+  vars:
+    the_user: "{{ ansible_user_id }}"
+
+

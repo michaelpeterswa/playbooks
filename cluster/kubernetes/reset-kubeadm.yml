@@ -1,0 +1,7 @@
+---
+- name: Reset Kubeadm
+  hosts: controlplane
+  tasks:
+  - name: Reset Kubeadm
+    command: kubeadm reset -f
+    become: True
