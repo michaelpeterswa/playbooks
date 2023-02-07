@@ -3,28 +3,26 @@
 
 - name: Download and Install Packages
   import_playbook: setup/configure-packages.yml
-  vars:
-    the_user: "{{ ansible_user_id }}"
 
 - name: Configure OhMyZSH with Antibody
   import_playbook: setup/configure-oh-my-zsh.yml
   vars:
-    the_user: "{{ ansible_user_id }}"
     reset_ohmyzsh: True
 
 - name: Configure Containerd
   import_playbook: setup/configure-containerd.yml
-  vars:
-    the_user: "{{ ansible_user_id }}"
   
 - name: Configure Kubernetes
   import_playbook: setup/configure-kubernetes.yml
-  vars:
-    the_user: "{{ ansible_user_id }}"
 
-- name: Remove Docker
-  import_playbook: setup/remove-docker.yml
-  vars:
-    the_user: "{{ ansible_user_id }}"
+# - name: Remove Docker
+#   import_playbook: setup/remove-docker.yml
 
+- name: Create Control Plane
+  import_playbook: kubernetes/create-control-plane.yml
 
+- name: Join Worker Nodes
+  import_playbook: kubernetes/join-worker-nodes.yml
+
+- name: Exfiltrate Kubeconfig
+  import_playbook: kubernetes/exfiltrate-kube-config.yml

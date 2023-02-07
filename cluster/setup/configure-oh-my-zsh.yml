@@ -5,41 +5,41 @@
   - name: Remove OhMyZSH Directory
     ansible.builtin.shell:
       cmd: rm -rf .oh-my-zsh/
-      chdir: /home/{{ the_user }}
+      chdir: /home/{{ ansible_user_id }}
     when: reset_ohmyzsh | bool
   - name: Download and Install OhMyZSH
     ansible.builtin.shell:
       cmd: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-      chdir: /home/{{ the_user }}
+      chdir: /home/{{ ansible_user_id }}
     when: reset_ohmyzsh | bool
   - name: Download and Install Antibody
     ansible.builtin.shell:
       cmd: curl -sfL git.io/antibody | sudo sh -s - -b /usr/local/bin
-      chdir: /home/{{ the_user }}
+      chdir: /home/{{ ansible_user_id }}
     become: True
     when: reset_ohmyzsh | bool
   - name: Download michaelpeterswa's .zshplugins
     ansible.builtin.shell:
       cmd: curl -fsSL https://raw.githubusercontent.com/michaelpeterswa/dotfiles/master/dots/.zshplugins -o .zshplugins
-      chdir: /home/{{ the_user }}
+      chdir: /home/{{ ansible_user_id }}
     when: reset_ohmyzsh | bool
   - name: Delete Current .zshrc
     ansible.builtin.shell:
       cmd: rm -rf .zshrc
-      chdir: /home/{{ the_user }}
+      chdir: /home/{{ ansible_user_id }}
     when: reset_ohmyzsh | bool
   - name: Download michaelpeterswa's .zshrc
     ansible.builtin.shell:
       cmd: curl -fsSL https://raw.githubusercontent.com/michaelpeterswa/dotfiles/master/dots/.zshrc -o .zshrc
-      chdir: /home/{{ the_user }}
+      chdir: /home/{{ ansible_user_id }}
     when: reset_ohmyzsh | bool
   - name: Download and Install LambdaGitster OMZ Theme
     ansible.builtin.shell:
       cmd: curl -fsSL https://raw.githubusercontent.com/ergenekonyigit/lambda-gitster/main/lambda-gitster.zsh-theme -o .oh-my-zsh/custom/themes/lambda-gitster.zsh-theme
-      chdir: /home/{{ the_user }}
+      chdir: /home/{{ ansible_user_id }}
     when: reset_ohmyzsh | bool
   - name: Ensure Last Line of .zshrc is Absent
     ansible.builtin.lineinfile:
-      path: /home/{{ the_user }}/.zshrc
+      path: /home/{{ ansible_user_id }}/.zshrc
       regexp: '^curl'
       state: absent

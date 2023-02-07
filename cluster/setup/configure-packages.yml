@@ -15,7 +15,7 @@
   - name: Change User Shell to ZSH
     become: True
     user:
-      name: "{{ the_user }}"
+      name: "{{ ansible_user_id }}"
       shell: /bin/zsh
   - name: Install Git
     apt:
@@ -30,7 +30,7 @@
   - name: Download and Install lolcat
     ansible.builtin.shell:
       cmd: gem install lolcat
-      chdir: /home/{{ the_user }}
+      chdir: /home/{{ ansible_user_id }}
     become: True
   - name: Download bat Binary
     ansible.builtin.shell:
@@ -45,7 +45,7 @@
   - name: Download and Install croc
     ansible.builtin.shell:
       cmd: curl https://getcroc.schollz.com | bash
-      chdir: /home/{{ the_user }}
+      chdir: /home/{{ ansible_user_id }}
     become: True
   - name: Install Figlet
     apt:
